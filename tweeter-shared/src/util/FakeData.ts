@@ -21,7 +21,7 @@ export class FakeData {
     new User("Bonnie", "Beatty", "@bonnie", FEMALE_IMAGE_URL),
     new User("Chris", "Colston", "@chris", MALE_IMAGE_URL),
     new User("Cindy", "Coats", "@cindy", FEMALE_IMAGE_URL),
-    new User("Dan", "Donaldson", "@dan", MALE_IMAGE_URL),
+    new User("Donald", "Duck", "@donald", MALE_IMAGE_URL),
     new User("Dee", "Dempsey", "@dee", FEMALE_IMAGE_URL),
     new User("Elliott", "Enderson", "@elliott", MALE_IMAGE_URL),
     new User("Elizabeth", "Engle", "@elizabeth", FEMALE_IMAGE_URL),
@@ -235,13 +235,13 @@ export class FakeData {
    * Returns a followers count for the user, as a random number between 1 and 10.
    */
   public getFollowerCount(userAlias: string): number | PromiseLike<number> {
-    return Math.floor(Math.random() * 10) + 1
+    return Math.floor(Math.random() * 10) + 1;
   }
 
   /**
    * Returns a followees count for the user, as a random number between 1 and 10.
    */
   public getFolloweeCount(userAlias: string): number | PromiseLike<number> {
-    return Math.floor(Math.random() * 10) + 1
+    return Math.floor(Math.random() * 10) + 1;
   }
 }

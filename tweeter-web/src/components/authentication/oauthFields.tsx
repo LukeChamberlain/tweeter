@@ -1,11 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+interface Props {
+  displayInfoMessageWithDarkBackground: (message: string) => void;
+}
 
-const OauthFields = () => {
-    function displayInfoMessageWithDarkBackground(arg0: string): void {
-        throw new Error("Function not implemented.");
-    }
-
+const OauthFields = ({ displayInfoMessageWithDarkBackground }: Props) => {
   return (
     <div className="text-center mb-3">
       <button

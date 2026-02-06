@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { useContext } from "react";
-import { ToastActionsContext } from "../toaster/ToastContexts";
-import { ToastType } from "../toaster/Toast";
+
+
 import OauthFields from "./oauthFields";
+import { useMessageActions } from "../toaster/MessageHooks";
 
 interface Props {
   headingText: string;
@@ -18,14 +18,12 @@ interface Props {
 }
 
 const AuthenticationFormLayout = (props: Props) => {
-  const { displayToast } = useContext(ToastActionsContext);
+  const { displayInfoMessage } = useMessageActions();
 
   const displayInfoMessageWithDarkBackground = (message: string): void => {
-    displayToast(
-      ToastType.Info,
+    displayInfoMessage(
       message,
       3000,
-      undefined,
       "text-white bg-primary"
     );
   };
@@ -47,7 +45,7 @@ const AuthenticationFormLayout = (props: Props) => {
 
           <h1 className="h4 mb-3 fw-normal">Or</h1>
           <h1 className="h5 mb-3 fw-normal">{props.oAuthHeading}</h1>
-          <OauthFields />
+          <OauthFields displayInfoMessageWithDarkBackground={displayInfoMessageWithDarkBackground} />
 
           <div className="checkbox mb-3">
             <label>
@@ -86,3 +84,4 @@ const AuthenticationFormLayout = (props: Props) => {
 };
 
 export default AuthenticationFormLayout;
+
