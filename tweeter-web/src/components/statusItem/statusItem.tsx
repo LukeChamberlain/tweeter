@@ -1,9 +1,9 @@
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Post from "./Post";
 import { Status, User } from "tweeter-shared";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfo, useUserInfoActions } from "../userInfo/UserInfoHooks";
-import { useUserNavigation } from "../userNavigationHooks";
+import { useUserNavigation } from "../userItem/userNavigationHooks";
 
 interface Props {
   status: Status;
