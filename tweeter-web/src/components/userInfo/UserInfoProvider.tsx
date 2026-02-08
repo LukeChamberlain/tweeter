@@ -1,47 +1,35 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useRef } from "react";
 import { User, AuthToken } from "tweeter-shared";
 import { UserInfoContext, UserInfoActionsContext } from "./UserInfoContexts";
-import { UserInfo } from "./UserInfo";
-
-const CURRENT_USER_KEY: string = "CurrentUserKey";
-const AUTH_TOKEN_KEY: string = "AuthTokenKey";
+import {
+  UserInfoProviderPresenter,
+  UserInfoProviderView,
+} from "../../presenter/UserInfoProviderPresenter";
+import { UserInfo } from "../../model.service/UserInfoProviderService";
 
 interface Props {
   children: React.ReactNode;
 }
 
 const UserInfoProvider: React.FC<Props> = ({ children }) => {
-  const saveToLocalStorage = (
-    currentUser: User,
-    authToken: AuthToken
-  ): void => {
-    localStorage.setItem(CURRENT_USER_KEY, currentUser.toJson());
-    localStorage.setItem(AUTH_TOKEN_KEY, authToken.toJson());
-  };
-
-  const retrieveFromLocalStorage = (): UserInfo => {
-    const loggedInUser = User.fromJson(localStorage.getItem(CURRENT_USER_KEY));
-    const authToken = AuthToken.fromJson(localStorage.getItem(AUTH_TOKEN_KEY));
-
-    if (!!loggedInUser && !!authToken) {
-      return {
-        currentUser: loggedInUser,
-        displayedUser: loggedInUser,
-        authToken: authToken,
-      };
-    } else {
-      return { currentUser: null, displayedUser: null, authToken: null };
-    }
-  };
-
-  const clearLocalStorage = (): void => {
-    localStorage.removeItem(CURRENT_USER_KEY);
-    localStorage.removeItem(AUTH_TOKEN_KEY);
-  };
-
-  const [userInfo, setUserInfo] = useState({
-    ...retrieveFromLocalStorage(),
+  const [userInfo, setUserInfo] = useState<UserInfo>(() => {
+    const presenterForInit = new UserInfoProviderPresenter({
+      setUserInfo: () => {},
+    });
+    return presenterForInit.initializeUserInfo();
   });
+
+  const view: UserInfoProviderView = useMemo(
+    () => ({
+      setUserInfo: (userInfo: UserInfo) => setUserInfo(userInfo),
+    }),
+    []
+  );
+
+  const presenterRef = useRef<UserInfoProviderPresenter | null>(null);
+  if (!presenterRef.current) {
+    presenterRef.current = new UserInfoProviderPresenter(view);
+  }
 
   const updateUserInfo = useCallback(
     (
@@ -50,36 +38,23 @@ const UserInfoProvider: React.FC<Props> = ({ children }) => {
       authToken: AuthToken,
       remember: boolean = false
     ) => {
-      setUserInfo(() => {
-        return {
-          currentUser: currentUser,
-          displayedUser: displayedUser,
-          authToken: authToken,
-        };
-      });
-
-      if (remember) {
-        saveToLocalStorage(currentUser, authToken);
-      }
+      presenterRef.current!.updateUserInfo(
+        currentUser,
+        displayedUser,
+        authToken,
+        remember
+      );
     },
     []
   );
 
   const clearUserInfo = useCallback(() => {
-    setUserInfo(() => {
-      return {
-        currentUser: null,
-        displayedUser: null,
-        authToken: null,
-      };
-    });
-
-    clearLocalStorage();
+    presenterRef.current!.clearUserInfo();
   }, []);
 
   const setDisplayedUser = useCallback((user: User) => {
     setUserInfo((previous) => {
-      return { ...previous, displayedUser: user };
+      return presenterRef.current!.setDisplayedUser(user, previous);
     });
   }, []);
 
