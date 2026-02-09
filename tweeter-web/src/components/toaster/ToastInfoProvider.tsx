@@ -1,7 +1,11 @@
-import { useCallback, useMemo, useState } from "react";
-import { Toast, ToastType, makeToast } from "./Toast";
+import { useCallback, useMemo, useState, useRef } from "react";
+import { Toast, ToastType } from "./Toast";
 import PropTypes from "prop-types";
 import { ToastListContext, ToastActionsContext } from "./ToastContexts";
+import {
+  ToastInfoPresenter,
+  ToastInfoProviderView,
+} from "../../presenter/ToastInfoProviderPresenter";
 
 interface Props {
   children: React.ReactNode;
@@ -10,9 +14,24 @@ interface Props {
 const ToastInfoProvider: React.FC<Props> = ({ children }) => {
   const [toastList, setToastList] = useState<Toast[]>([]);
 
-  const displayExistingToast = useCallback((toast: Toast) => {
-    setToastList((previousList) => [...previousList, toast]);
-  }, []);
+  const view: ToastInfoProviderView = useMemo(
+    () => ({
+      setToastList: (toastList: Toast[]) => setToastList(toastList),
+    }),
+    []
+  );
+
+  const presenterRef = useRef<ToastInfoPresenter | null>(null);
+  if (!presenterRef.current) {
+    presenterRef.current = new ToastInfoPresenter(view);
+  }
+
+  const displayExistingToast = useCallback(
+    (toast: Toast) => {
+      presenterRef.current!.displayExistingToast(toast, toastList);
+    },
+    [toastList]
+  );
 
   const displayToast = useCallback(
     (
@@ -22,28 +41,27 @@ const ToastInfoProvider: React.FC<Props> = ({ children }) => {
       title?: string,
       bootstrapClasses?: string
     ): string => {
-      const toast = makeToast(
+      return presenterRef.current!.displayToast(
         toastType,
         message,
         duration,
+        toastList,
         title,
         bootstrapClasses
       );
-      displayExistingToast(toast);
-      return toast.id;
     },
-    [displayExistingToast]
+    [toastList]
   );
 
-  const deleteToast = useCallback((id: string) => {
-    setToastList((currentList) => {
-      const filtered = currentList.filter((x) => x.id !== id);
-      return filtered;
-    });
-  }, []);
+  const deleteToast = useCallback(
+    (id: string) => {
+      presenterRef.current!.deleteToast(id, toastList);
+    },
+    [toastList]
+  );
 
   const deleteAllToasts = useCallback(() => {
-    setToastList([]);
+    presenterRef.current!.deleteAllToasts();
   }, []);
 
   const toastActions = useMemo(
