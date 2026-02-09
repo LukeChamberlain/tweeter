@@ -11,7 +11,4 @@ export class PostStatusService {
     // TODO: Call the server to post the status
   }
 
-  public isPostValid(post: string, authToken: AuthToken | null, currentUserExists: boolean): boolean {
-    return post.trim().length > 0 && authToken !== null && currentUserExists;
-  }
 }

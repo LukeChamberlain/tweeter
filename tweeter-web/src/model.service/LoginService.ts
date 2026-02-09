@@ -1,9 +1,6 @@
 import { AuthToken, FakeData, User } from "tweeter-shared";
 
 export class LoginService {
-  public isLoginFormValid(alias: string, password: string): boolean {
-    return !!alias && !!password;
-  }
 
   public async login(
     alias: string,

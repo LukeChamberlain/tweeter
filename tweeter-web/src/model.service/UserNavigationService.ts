@@ -27,7 +27,6 @@ export class UserNavigationService {
     if (toUser && !toUser.equals(currentUser!)) {
       return toUser;
     }
-
     return null;
   }
 }

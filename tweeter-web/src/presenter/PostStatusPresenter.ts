@@ -53,11 +53,15 @@ export class PostStatusPresenter {
     authToken: AuthToken | null,
     currentUser: User | null
   ): boolean {
-    return !this.service.isPostValid(
+    return !this.isPostValid(
       post,
       authToken,
       currentUser !== null
     );
+  }
+
+  public isPostValid(post: string, authToken: AuthToken | null, currentUserExists: boolean): boolean {
+    return post.trim().length > 0 && authToken !== null && currentUserExists;
   }
 
   public clearPost(): void {

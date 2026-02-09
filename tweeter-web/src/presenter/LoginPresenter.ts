@@ -16,7 +16,11 @@ export class LoginPresenter {
   }
 
   public isLoginButtonDisabled(alias: string, password: string): boolean {
-    return !this.service.isLoginFormValid(alias, password);
+    return !this.isLoginFormValid(alias, password);
+  }
+
+  public isLoginFormValid(alias: string, password: string): boolean {
+    return !!alias && !!password;
   }
 
   public async doLogin(
