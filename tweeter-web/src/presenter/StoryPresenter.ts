@@ -1,33 +1,27 @@
-import { AuthToken } from "tweeter-shared";
+import { AuthToken, Status } from "tweeter-shared";
 import { StatusService } from "../model.service/StatusService";
-import { StatusItemPresenter, StatusItemView } from "./StatusItemPresenter";
-
-export const PAGE_SIZE = 10;
+import { StatusItemPresenter } from "./StatusItemPresenter";
+import { PAGE_SIZE, PageItemView } from "./PageItemPresenter";
+//This is using the template method pattern that comes from page Item presenter class and 
+//the parts that very are the description and the get more items method. This is the presenter 
+//for the story page and it uses the same method as the feed presenter but it just has a different 
+//description and it calls a different method in the service to get the story items instead of the feed items.
 
 export class StoryPresenter extends StatusItemPresenter {
-  private service: StatusService;
 
-  public constructor(view: StatusItemView) {
-    super(view);
-    this.service = new StatusService();
+  protected ItemDescription(): string {
+    return " load stories";
   }
 
-  public async loadMoreItems(authToken: AuthToken, userAlias: string) {
-    try {
-      const [newItems, hasMore] = await this.service.loadMoreStoryItems(
-        authToken,
-        userAlias,
-        PAGE_SIZE,
-        this.lastItem
-      );
-
-      this.hasMoreItems = hasMore;
-      this.lastItem = newItems.length > 0 ? newItems[newItems.length - 1] : null;
-      this.view.addItems(newItems);
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to load stories because of exception: ${error}`
-      );
-    }
+  protected getMoreItems(
+    authToken: AuthToken,
+    userAlias: string
+  ): Promise<[Status[], boolean]> {
+    return this.service.loadMoreFeedItems(
+      authToken,
+      userAlias,
+      PAGE_SIZE,
+      this.lastItem
+    );
   }
 }

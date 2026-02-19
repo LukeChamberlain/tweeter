@@ -1,7 +1,8 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "./UserService";
+import { Service } from "./Service";
 
-export class UserNavigationService {
+export class UserNavigationService implements Service{
   private userService: UserService;
 
   public constructor() {

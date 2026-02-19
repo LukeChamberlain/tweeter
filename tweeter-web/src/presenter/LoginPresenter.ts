@@ -1,17 +1,17 @@
 import { AuthToken, User } from "tweeter-shared";
 import { LoginService } from "../model.service/LoginService";
-
-export interface LoginView {
-  displayErrorMessage: (message: string) => void;
+import { Presenter, View } from "./presenter";
+//eliminated the displayErrorMessage in the view it now comes through the presenter and it is used in the generic presenter class
+//This uses the generic method that is created in the presenter
+export interface LoginView extends View {
   setIsLoading: (isLoading: boolean) => void;
 }
 
-export class LoginPresenter {
-  private view: LoginView;
+export class LoginPresenter extends Presenter<LoginView> {
   private service: LoginService;
 
   public constructor(view: LoginView) {
-    this.view = view;
+    super(view);
     this.service = new LoginService();
   }
 
@@ -27,28 +27,27 @@ export class LoginPresenter {
     alias: string,
     password: string,
     rememberMe: boolean,
-    updateUserInfo: (user: User, displayedUser: User, authToken: AuthToken, remember: boolean) => void,
+    updateUserInfo: (
+      user: User,
+      displayedUser: User,
+      authToken: AuthToken,
+      remember: boolean
+    ) => void,
     navigate: (path: string) => void,
     originalUrl?: string
   ): Promise<void> {
-    try {
-      this.view.setIsLoading(true);
-
-      const [user, authToken] = await this.service.login(alias, password);
-
-      updateUserInfo(user, user, authToken, rememberMe);
-
-      if (!!originalUrl) {
-        navigate(originalUrl);
-      } else {
-        navigate(`/feed/${user.alias}`);
-      }
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to log user in because of exception: ${error}`
-      );
-    } finally {
-      this.view.setIsLoading(false);
-    }
+    await this.doAuthenticationOperation(
+      async () => {
+        const [user, authToken] = await this.service.login(alias, password);
+        updateUserInfo(user, user, authToken, rememberMe);
+        if (!!originalUrl) {
+          navigate(originalUrl);
+        } else {
+          navigate(`/feed/${user.alias}`);
+        }
+      },
+      "log user in",
+      this.view.setIsLoading.bind(this.view)
+    );
   }
 }

@@ -1,7 +1,8 @@
 import { ToasterService, ToastMessage } from "../model.service/ToasterService";
+import { MessageView } from "./presenter";
 
 export interface ToasterView {
-  deleteMessage: (messageId: string) => void;
+    deleteMessage: (messageId: string) => void;
 }
 
 export class ToasterPresenter {

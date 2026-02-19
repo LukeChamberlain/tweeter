@@ -1,20 +1,18 @@
 import { AuthToken, Status, User } from "tweeter-shared";
 import { PostStatusService } from "../model.service/PostStatusService";
-
-export interface PostStatusView {
-  displayInfoMessage: (message: string, duration: number) => string;
-  displayErrorMessage: (message: string) => void;
-  deleteMessage: (messageId: string) => void;
+import { MessageView, Presenter } from "./presenter";
+//eliminated the displayErrorMessage in the view it now comes through the presenter and it is used in the generic presenter class
+//This uses the generic method that is created in the presenter
+export interface PostStatusView extends MessageView{
   setPost: (post: string) => void;
   setIsLoading: (isLoading: boolean) => void;
 }
 
-export class PostStatusPresenter {
-  private view: PostStatusView;
+export class PostStatusPresenter extends Presenter<PostStatusView> {
   private service: PostStatusService;
 
   public constructor(view: PostStatusView) {
-    this.view = view;
+    super(view);
     this.service = new PostStatusService();
   }
 
@@ -24,8 +22,7 @@ export class PostStatusPresenter {
     authToken: AuthToken
   ): Promise<void> {
     let postingStatusToastId = "";
-
-    try {
+    await this.doFailureReportOperation(async () => {
       this.view.setIsLoading(true);
       postingStatusToastId = this.view.displayInfoMessage(
         "Posting status...",
@@ -38,14 +35,9 @@ export class PostStatusPresenter {
 
       this.view.setPost("");
       this.view.displayInfoMessage("Status posted!", 2000);
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to post the status because of exception: ${error}`
-      );
-    } finally {
-      this.view.deleteMessage(postingStatusToastId);
-      this.view.setIsLoading(false);
-    }
+    }, "post the status");
+    this.view.deleteMessage(postingStatusToastId);
+    this.view.setIsLoading(false);
   }
 
   public isPostButtonDisabled(
@@ -53,14 +45,14 @@ export class PostStatusPresenter {
     authToken: AuthToken | null,
     currentUser: User | null
   ): boolean {
-    return !this.isPostValid(
-      post,
-      authToken,
-      currentUser !== null
-    );
+    return !this.isPostValid(post, authToken, currentUser !== null);
   }
 
-  public isPostValid(post: string, authToken: AuthToken | null, currentUserExists: boolean): boolean {
+  public isPostValid(
+    post: string,
+    authToken: AuthToken | null,
+    currentUserExists: boolean
+  ): boolean {
     return post.trim().length > 0 && authToken !== null && currentUserExists;
   }
 

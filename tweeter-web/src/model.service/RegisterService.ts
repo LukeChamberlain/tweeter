@@ -1,7 +1,8 @@
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import { Buffer } from "buffer";
+import { Service } from "./Service";
 
-export class RegisterService {
+export class RegisterService implements Service{
   public getFileExtension(file: File): string | undefined {
     return file.name.split(".").pop();
   }

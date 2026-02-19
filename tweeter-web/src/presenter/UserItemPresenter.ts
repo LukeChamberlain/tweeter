@@ -1,54 +1,10 @@
-import { AuthToken, User } from "tweeter-shared";
-import { UserService } from "../model.service/UserService";
+import {User } from "tweeter-shared";
+import { PageItemPresenter, PageItemView } from "./PageItemPresenter";
+import { FollowService } from "../model.service/FollowService";
+//eliminated the displayErrorMessage in the view it now comes through the PageItempresenter and it is used in the generic presenter class
 
-export interface UserItemView {
-  addItems: (newItems: User[]) => void;
-  displayErrorMessage: (message: string) => void;
-}
-
-export abstract class UserItemPresenter {
-  private _view: UserItemView;
-  private _hasMoreItems = true;
-  private _lastItem: User | null = null;
-  private userService: UserService;
-
-  protected constructor(view: UserItemView) {
-    this._view = view;
-    this.userService = new UserService();
-  }
-
-  protected get view() {
-    return this._view;
-  }
-
-  protected get lastItem() {
-    return this._lastItem;
-  }
-  protected set lastItem(value: User | null) {
-    this._lastItem = value;
-  }
-  public get hasMoreItems() {
-    return this._hasMoreItems;
-  }
-
-  protected set hasMoreItems(value: boolean) {
-    this._hasMoreItems = value;
-  }
-
-
-
-  public abstract loadMoreItems(authToken: AuthToken, userAlias: string): void;
-
-  reset() {
-    this.lastItem = null;
-    this.hasMoreItems = true;
-  }
-
-  public async getUser(
-    authToken: AuthToken,
-    alias: string
-  ): Promise<User | null> {
-    // TODO: Replace with the result of calling server
-    return this.userService.getUser(authToken, alias);
+export abstract class UserItemPresenter  extends PageItemPresenter <User, FollowService> {
+  protected serviceFactory(): FollowService {
+    return new FollowService();
   }
 }

@@ -1,26 +1,26 @@
 import { AuthToken, User } from "tweeter-shared";
 import { RegisterService } from "../model.service/RegisterService";
+import Register from "../components/authentication/register/Register";
+import { Presenter, View } from "./presenter";
 
-export interface RegisterView {
-  displayErrorMessage: (message: string) => void;
+export interface RegisterView extends View {
   setImageUrl: (url: string) => void;
   setImageBytes: (bytes: Uint8Array) => void;
   setImageFileExtension: (extension: string) => void;
   setIsLoading: (isLoading: boolean) => void;
 }
 
-export class RegisterPresenter {
-  private view: RegisterView;
+export class RegisterPresenter extends Presenter<RegisterView> {
   private service: RegisterService;
 
   public constructor(view: RegisterView) {
-    this.view = view;
+    super(view);
     this.service = new RegisterService();
   }
 
   public async handleImageFile(file: File | undefined): Promise<void> {
     if (file) {
-      try {
+      await this.doFailureReportOperation(async () => {
         this.view.setImageUrl(URL.createObjectURL(file));
 
         const imageBytes = await this.service.convertFileToImageBytes(file);
@@ -30,12 +30,7 @@ export class RegisterPresenter {
         if (fileExtension) {
           this.view.setImageFileExtension(fileExtension);
         }
-      } catch (error) {
-        this.view.displayErrorMessage(
-          `Failed to process image because of exception: ${error}`
-        );
-        this.clearImage();
-      }
+      }, "process image");
     } else {
       this.clearImage();
     }
@@ -73,29 +68,29 @@ export class RegisterPresenter {
     imageBytes: Uint8Array,
     imageFileExtension: string,
     rememberMe: boolean,
-    updateUserInfo: (user: User, displayedUser: User, authToken: AuthToken, remember: boolean) => void,
+    updateUserInfo: (
+      user: User,
+      displayedUser: User,
+      authToken: AuthToken,
+      remember: boolean
+    ) => void,
     navigate: (path: string) => void
   ): Promise<void> {
-    try {
-      this.view.setIsLoading(true);
-
-      const [user, authToken] = await this.service.register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        imageBytes,
-        imageFileExtension
-      );
-
-      updateUserInfo(user, user, authToken, rememberMe);
-      navigate(`/feed/${user.alias}`);
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to register user because of exception: ${error}`
-      );
-    } finally {
-      this.view.setIsLoading(false);
-    }
+    await this.doAuthenticationOperation(
+      async () => {
+        const [user, authToken] = await this.service.register(
+          firstName,
+          lastName,
+          alias,
+          password,
+          imageBytes,
+          imageFileExtension
+        );
+        updateUserInfo(user, user, authToken, rememberMe);
+        navigate(`/feed/${user.alias}`);
+      },
+      "register user",
+      this.view.setIsLoading.bind(this.view)
+    );
   }
 }

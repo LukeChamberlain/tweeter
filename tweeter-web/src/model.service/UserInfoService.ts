@@ -1,7 +1,8 @@
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import { FollowService } from "./FollowService";
+import { Service } from "./Service";
 
-export class UserInfoService {
+export class UserInfoService implements Service{
   private followService: FollowService;
 
   public constructor() {

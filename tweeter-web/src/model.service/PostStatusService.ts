@@ -1,6 +1,7 @@
 import { AuthToken, Status } from "tweeter-shared";
+import { Service } from "./Service";
 
-export class PostStatusService {
+export class PostStatusService implements Service{
   public async postStatus(
     authToken: AuthToken,
     newStatus: Status

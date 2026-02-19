@@ -29,8 +29,7 @@ const UserInfo = () => {
 
   const view: UserInfoView = useMemo(
     () => ({
-      displayErrorMessage: (message: string) =>
-        displayErrorMessage(message),
+      displayErrorMessage: (message: string) => displayErrorMessage(message),
       displayInfoMessage: (message: string, duration: number) =>
         displayInfoMessage(message, duration),
       deleteMessage: (messageId: string) => deleteMessage(messageId),

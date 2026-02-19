@@ -1,7 +1,7 @@
 import { ToastType, Toast, makeToast } from "../components/toaster/Toast";
+import { Service } from "./Service";
 
-
-export class ToastInfoService {
+export class ToastInfoService implements Service{
   public createToast(
     toastType: ToastType,
     message: string,

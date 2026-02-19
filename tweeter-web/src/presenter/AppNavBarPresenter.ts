@@ -1,20 +1,18 @@
 import { AuthToken } from "tweeter-shared";
 import { AppNavbarService } from "../model.service/AppNavBarService";
-
-export interface AppNavbarView {
-  displayInfoMessage: (message: string, duration: number) => string;
-  displayErrorMessage: (message: string) => void;
-  deleteMessage: (messageId: string) => void;
+import { MessageView, Presenter} from "./presenter";
+//eliminated the displayErrorMessage in the view it now comes through the presenter and it is used in the generic presenter class
+//This uses the generic method that is created in the presenter
+export interface AppNavbarView extends MessageView{
   clearUserInfo: () => void;
   navigate: (path: string) => void;
 }
 
-export class AppNavbarPresenter {
-  private view: AppNavbarView;
+export class AppNavbarPresenter extends Presenter<AppNavbarView>{
   private service: AppNavbarService;
 
   public constructor(view: AppNavbarView) {
-    this.view = view;
+    super(view);
     this.service = new AppNavbarService();
   }
 
@@ -23,19 +21,16 @@ export class AppNavbarPresenter {
       "Logging Out...",
       0
     );
-
-    try {
+    await this.doFailureReportOperation(async () => {
       await this.service.logout(authToken);
 
       this.view.deleteMessage(loggingOutToastId);
       this.view.clearUserInfo();
       this.view.navigate("/login");
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to log user out because of exception: ${error}`
-      );
-    }
-  }
+  }, "log user out");
+}
+  
+  
 
   public isRouteActive(pathname: string, routePrefix: string): boolean {
     return this.isRouteActive(pathname, routePrefix);

@@ -1,3 +1,4 @@
+import { Service } from "./Service";
 export interface ToastMessage {
     id: string;
     title: string;
@@ -6,7 +7,7 @@ export interface ToastMessage {
     expirationMillisecond: number;
   }
   
-  export class ToasterService {
+  export class ToasterService implements Service{
     public getExpiredToasts(messageList: ToastMessage[]): string[] {
       const now = Date.now();
       const expiredIds: string[] = [];
