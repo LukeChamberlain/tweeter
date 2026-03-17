@@ -7,7 +7,7 @@ import {
   PostStatusView,
 } from "../../presenter/PostStatusPresenter";
 
-const PostStatus = () => {
+const PostStatus = ({ presenter: externalPresenter }: { presenter?: PostStatusPresenter }) => {
   const { displayInfoMessage, displayErrorMessage, deleteMessage } =
     useMessageActions();
 
@@ -28,7 +28,7 @@ const PostStatus = () => {
     [displayInfoMessage, displayErrorMessage, deleteMessage]
   );
 
-  const presenterRef = useRef<PostStatusPresenter | null>(null);
+  const presenterRef = useRef<PostStatusPresenter | null>(externalPresenter ?? null);
   if (!presenterRef.current) {
     presenterRef.current = new PostStatusPresenter(view);
   }

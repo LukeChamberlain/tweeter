@@ -2,10 +2,12 @@ import { AuthToken, Status } from "tweeter-shared";
 import { StatusService } from "../model.service/StatusService";
 import { StatusItemPresenter } from "./StatusItemPresenter";
 import { PAGE_SIZE, PageItemView } from "./PageItemPresenter";
-//This is using the template method pattern that comes from page Item presenter class and 
-//the parts that very are the description and the get more items method. This is the presenter 
-//for the story page and it uses the same method as the feed presenter but it just has a different 
-//description and it calls a different method in the service to get the story items instead of the feed items.
+// StoryPresenter is a concrete implementation of the Template Method pattern defined in PageItemPresenter.
+// PageItemPresenter.loadMoreItems() is the "template method" — it defines the skeleton of the algorithm
+// (error handling, pagination state, updating the view) and delegates the variable parts to abstract
+// methods that subclasses must implement:
+//   - ItemDescription(): provides a label used in error reporting
+//   - getMoreItems(): performs the actual data fetch
 
 export class StoryPresenter extends StatusItemPresenter {
 
