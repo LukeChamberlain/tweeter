@@ -1,15 +1,13 @@
 import { AuthToken, Status } from "tweeter-shared";
-import { Service } from "./Service";
+import { ServerFacade } from "./net/ServerFacade";
 
-export class PostStatusService implements Service{
-  public async postStatus(
-    authToken: AuthToken,
-    newStatus: Status
-  ): Promise<void> {
-    // Pause so we can see the posting message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+export class PostStatusService {
+    private serverFacade = new ServerFacade();
 
-    // TODO: Call the server to post the status
-  }
-
+    public async postStatus(authToken: AuthToken, newStatus: Status): Promise<void> {
+        await this.serverFacade.postStatus({
+            token: authToken.token,
+            status: newStatus.dto
+        });
+    }
 }

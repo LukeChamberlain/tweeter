@@ -1,8 +1,8 @@
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import { FollowService } from "./FollowService";
-import { Service } from "./Service";
+import { Service } from "../../../tweeter-server/src/model/service/Service";
 
-export class UserInfoService implements Service{
+export class UserInfoService implements Service {
   private followService: FollowService;
 
   public constructor() {
@@ -55,8 +55,14 @@ export class UserInfoService implements Service{
   ): Promise<[followerCount: number, followeeCount: number]> {
     await new Promise((f) => setTimeout(f, 2000));
     // TODO: Call the server
-    const followerCount = await this.getFollowerCount(authToken, userToUnfollow);
-    const followeeCount = await this.getFolloweeCount(authToken, userToUnfollow);
+    const followerCount = await this.getFollowerCount(
+      authToken,
+      userToUnfollow
+    );
+    const followeeCount = await this.getFolloweeCount(
+      authToken,
+      userToUnfollow
+    );
 
     return [followerCount, followeeCount];
   }

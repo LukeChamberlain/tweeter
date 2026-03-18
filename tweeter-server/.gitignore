@@ -1,3 +1,7 @@
 /node_modules
 /dist
-/nodejs
+/.aws-sam
+/layer/nodejs/node_modules
+samconfig.toml
+*.js.map
+.DS_Store

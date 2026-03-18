@@ -1,15 +1,16 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model.service/UserService";
 import { Presenter, View } from "./presenter";
-import { Service } from "../model.service/Service";
+import { Service } from "../../../tweeter-server/src/model/service/Service";
 export const PAGE_SIZE = 10;
 
 export interface PageItemView<T> extends View {
   addItems: (newItems: T[]) => void;
-  
 }
 
-export abstract class PageItemPresenter<T, U extends Service> extends Presenter<PageItemView<T>> {
+export abstract class PageItemPresenter<T, U extends Service> extends Presenter<
+  PageItemView<T>
+> {
   private _hasMoreItems = true;
   private _lastItem: T | null = null;
   private userService: UserService;
@@ -53,7 +54,10 @@ export abstract class PageItemPresenter<T, U extends Service> extends Presenter<
 
   protected abstract ItemDescription(): string;
 
-  protected abstract getMoreItems(authToken: AuthToken, userAlias: string): Promise<[T[], boolean]>;
+  protected abstract getMoreItems(
+    authToken: AuthToken,
+    userAlias: string
+  ): Promise<[T[], boolean]>;
 
   reset() {
     this.lastItem = null;

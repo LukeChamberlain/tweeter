@@ -3,17 +3,23 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams } from "react-router-dom";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfo, useUserInfoActions } from "../userInfo/UserInfoHooks";
-import { PageItemPresenter, PageItemView } from "../../presenter/PageItemPresenter";
-import { Service } from "../../model.service/Service";
+import {
+  PageItemPresenter,
+  PageItemView,
+} from "../../presenter/PageItemPresenter";
+import { Service } from "../../../../tweeter-server/src/model/service/Service";
 
 interface Props<T, U extends Service> {
-    featurePath: string;
-    presenterFactory: (listener: PageItemView<T>) => PageItemPresenter<T, U>;
-    renderItem: (item: T, featurePath: string) => React.ReactNode;
-  }
+  featurePath: string;
+  presenterFactory: (listener: PageItemView<T>) => PageItemPresenter<T, U>;
+  renderItem: (item: T, featurePath: string) => React.ReactNode;
+}
 
-
-  function ItemScroller<T, U extends Service>({ featurePath, presenterFactory, renderItem }: Props<T, U>) {
+function ItemScroller<T, U extends Service>({
+  featurePath,
+  presenterFactory,
+  renderItem,
+}: Props<T, U>) {
   const { displayErrorMessage } = useMessageActions();
   const [items, setItems] = useState<T[]>([]);
 
@@ -33,10 +39,16 @@ interface Props<T, U extends Service> {
   }
 
   useEffect(() => {
-    if (authToken && displayedUserAliasParam && displayedUserAliasParam != displayedUser!.alias) {
-      presenterRef.current!.getUser(authToken!, displayedUserAliasParam!).then((toUser) => {
-        if (toUser) setDisplayedUser(toUser);
-      });
+    if (
+      authToken &&
+      displayedUserAliasParam &&
+      displayedUserAliasParam != displayedUser!.alias
+    ) {
+      presenterRef
+        .current!.getUser(authToken!, displayedUserAliasParam!)
+        .then((toUser) => {
+          if (toUser) setDisplayedUser(toUser);
+        });
     }
   }, [displayedUserAliasParam]);
 
@@ -64,7 +76,10 @@ interface Props<T, U extends Service> {
         loader={<h4>Loading...</h4>}
       >
         {items.map((item, index) => (
-          <div key={index} className="row mb-3 mx-0 px-0 border rounded bg-white">
+          <div
+            key={index}
+            className="row mb-3 mx-0 px-0 border rounded bg-white"
+          >
             {renderItem(item, featurePath)}
           </div>
         ))}

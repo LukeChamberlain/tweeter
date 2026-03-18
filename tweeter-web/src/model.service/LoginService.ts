@@ -1,19 +1,14 @@
-import { AuthToken, FakeData, User } from "tweeter-shared";
-import { Service } from "./Service";
+import { AuthToken, User } from "tweeter-shared";
+import { ServerFacade } from "./net/ServerFacade";
 
-export class LoginService implements Service{
+export class LoginService {
+    private serverFacade = new ServerFacade();
 
-  public async login(
-    alias: string,
-    password: string
-  ): Promise<[User, AuthToken]> {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-
-    if (user === null) {
-      throw new Error("Invalid alias or password");
+    public async login(alias: string, password: string): Promise<[User, AuthToken]> {
+        return this.serverFacade.login({
+            token: "",
+            alias: alias,
+            password: password
+        });
     }
-
-    return [user, FakeData.instance.authToken];
-  }
 }

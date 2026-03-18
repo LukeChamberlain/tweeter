@@ -1,7 +1,7 @@
 import { AuthToken, User, FakeData, Status } from "tweeter-shared";
-import { Service } from "./Service";
+import { Service } from "../../../tweeter-server/src/model/service/Service";
 
-export class UserService implements Service{
+export class UserService implements Service {
   public async getUser(
     authToken: AuthToken,
     alias: string
@@ -9,5 +9,4 @@ export class UserService implements Service{
     // TODO: Replace with the result of calling server
     return FakeData.instance.findUserByAlias(alias);
   }
-
 }
