@@ -17,5 +17,9 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "../tweeter-server/src/model/service/Service.ts"]
+  "include": [
+    "src",
+    "../tweeter-server/src/model/service/Service.ts",
+    "test/integration.test.ts"
+  ]
 }
