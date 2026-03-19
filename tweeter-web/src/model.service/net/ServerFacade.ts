@@ -1,7 +1,13 @@
 import {
   AuthToken,
+  FollowRequest,
+  FollowResponse,
+  GetCountRequest,
+  GetCountResponse,
   GetUserRequest,
   GetUserResponse,
+  IsFollowerRequest,
+  IsFollowerResponse,
   LoginRequest,
   LoginResponse,
   PageStatusItemRequest,
@@ -19,7 +25,7 @@ import { ClientCommunicator } from "./ClientCommunicator";
 
 export class ServerFacade {
   private SERVER_URL =
-    "https://ejdq0cscw2.execute-api.us-east-1.amazonaws.com/prod";
+    "https://rcsfqnj6m8.execute-api.us-east-1.amazonaws.com/prod";
   private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
   public async getMoreFollowees(
@@ -162,5 +168,54 @@ export class ServerFacade {
     if (response.success)
       return response.user ? User.fromDto(response.user) : null;
     throw new Error(response.message ?? "Failed to get user");
+  }
+
+  public async getIsFollowerStatus(
+    request: IsFollowerRequest
+  ): Promise<boolean> {
+    const response = await this.clientCommunicator.doPost<
+      IsFollowerRequest,
+      IsFollowerResponse
+    >(request, "/follow/is-follower");
+    if (response.success) return response.isFollower;
+    throw new Error(response.message ?? "Failed to get follower status");
+  }
+
+  public async getFollowerCount(request: GetCountRequest): Promise<number> {
+    const response = await this.clientCommunicator.doPost<
+      GetCountRequest,
+      GetCountResponse
+    >(request, "/follow/get-follower-count");
+    if (response.success) return response.count;
+    throw new Error(response.message ?? "Failed to get follower count");
+  }
+
+  public async getFolloweeCount(request: GetCountRequest): Promise<number> {
+    const response = await this.clientCommunicator.doPost<
+      GetCountRequest,
+      GetCountResponse
+    >(request, "/follow/get-followee-count");
+    if (response.success) return response.count;
+    throw new Error(response.message ?? "Failed to get followee count");
+  }
+
+  public async followUser(request: FollowRequest): Promise<[number, number]> {
+    const response = await this.clientCommunicator.doPost<
+      FollowRequest,
+      FollowResponse
+    >(request, "/follow/follow-user");
+    if (response.success)
+      return [response.followerCount, response.followeeCount];
+    throw new Error(response.message ?? "Failed to follow user");
+  }
+
+  public async unfollowUser(request: FollowRequest): Promise<[number, number]> {
+    const response = await this.clientCommunicator.doPost<
+      FollowRequest,
+      FollowResponse
+    >(request, "/follow/unfollow-user");
+    if (response.success)
+      return [response.followerCount, response.followeeCount];
+    throw new Error(response.message ?? "Failed to unfollow user");
   }
 }
