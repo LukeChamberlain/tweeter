@@ -27,7 +27,7 @@
     "build": "tsc && vite build",
     "serve": "vite preview",
     "reload": "npm run build && npm run serve",
-    "test": "jest --passWithNoTests"
+    "test": "jest --verbose"
   },
   "eslintConfig": {
     "extends": [
