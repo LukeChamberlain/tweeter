@@ -1,30 +1,50 @@
-import { AuthToken, User, FakeData, UserDto } from "tweeter-shared";
-import { Service } from "./Service";  
+import { UserDto, User } from "tweeter-shared";
+import { Service } from "./Service";
 
-export class FollowService implements Service{
-  public async loadMoreFollowees(
-    token: string,
-    userAlias: string,
-    pageSize: number,
-    lastItem: UserDto | null
-  ): Promise<[UserDto[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return this.getFakeData(lastItem, pageSize, userAlias);
-  }
+export class FollowService extends Service {
+    public async loadMoreFollowees(
+        token: string,
+        userAlias: string,
+        pageSize: number,
+        lastItem: UserDto | null
+    ): Promise<[UserDto[], boolean]> {
+        const followDao = this.factory.getFollowDao();
+        const userDao = this.factory.getUserDao();
 
-  public async loadMoreFollowers(
-    token: string,
-    userAlias: string,
-    pageSize: number,
-    lastFollower: UserDto | null
-  ): Promise<[UserDto[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return this.getFakeData(lastFollower, pageSize, userAlias);
-  }
+        const [aliases, hasMore] = await followDao.getFollowees(
+            userAlias,
+            pageSize,
+            lastItem ? lastItem.alias : null
+        );
 
-  private async getFakeData(lastItem: UserDto | null, pageSize: number, userAlias: string): Promise<[UserDto[], boolean]> {
-    const [items, hasMore] = FakeData.instance.getPageOfUsers(User.fromDto(lastItem), pageSize, userAlias);
-    const dtos = items.map((user) => user.Dto);
-    return [dtos, hasMore];
-  }
+        const users = await Promise.all(aliases.map(alias => userDao.getUser(alias)));
+        const dtos = users
+            .filter(user => user !== null)
+            .map(user => user!.Dto);
+
+        return [dtos, hasMore];
+    }
+
+    public async loadMoreFollowers(
+        token: string,
+        userAlias: string,
+        pageSize: number,
+        lastItem: UserDto | null
+    ): Promise<[UserDto[], boolean]> {
+        const followDao = this.factory.getFollowDao();
+        const userDao = this.factory.getUserDao();
+
+        const [aliases, hasMore] = await followDao.getFollowers(
+            userAlias,
+            pageSize,
+            lastItem ? lastItem.alias : null
+        );
+
+        const users = await Promise.all(aliases.map(alias => userDao.getUser(alias)));
+        const dtos = users
+            .filter(user => user !== null)
+            .map(user => user!.Dto);
+
+        return [dtos, hasMore];
+    }
 }

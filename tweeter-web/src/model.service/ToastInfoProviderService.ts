@@ -1,7 +1,6 @@
 import { ToastType, Toast, makeToast } from "../components/toaster/Toast";
-import { Service } from "../../../tweeter-server/src/model/service/Service";
 
-export class ToastInfoService implements Service {
+export class ToastInfoService {
   public createToast(
     toastType: ToastType,
     message: string,

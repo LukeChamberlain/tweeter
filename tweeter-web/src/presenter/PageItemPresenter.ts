@@ -1,13 +1,13 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model.service/UserService";
 import { Presenter, View } from "./presenter";
-import { Service } from "../../../tweeter-server/src/model/service/Service";
 export const PAGE_SIZE = 10;
 
 export interface PageItemView<T> extends View {
   addItems: (newItems: T[]) => void;
 }
 
+export interface Service {}
 export abstract class PageItemPresenter<T, U extends Service> extends Presenter<
   PageItemView<T>
 > {

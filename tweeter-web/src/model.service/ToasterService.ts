@@ -1,4 +1,4 @@
-import { Service } from "../../../tweeter-server/src/model/service/Service";
+
 export interface ToastMessage {
   id: string;
   title: string;
@@ -7,7 +7,7 @@ export interface ToastMessage {
   expirationMillisecond: number;
 }
 
-export class ToasterService implements Service {
+export class ToasterService {
   public getExpiredToasts(messageList: ToastMessage[]): string[] {
     const now = Date.now();
     const expiredIds: string[] = [];

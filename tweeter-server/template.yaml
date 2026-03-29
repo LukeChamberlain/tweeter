@@ -2,7 +2,6 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: SAM config for Tweeter server
 
-
 #
 # Global Lambda function properties. These apply to every Lambda function.
 #
@@ -14,7 +13,6 @@ Globals:
       - !Ref tweeterLayer
     Timeout: 30
     MemorySize: 128
-
 
 #
 # Reusable blocks of configuration. These are referenced throughout the template to avoid duplication.
@@ -36,12 +34,10 @@ Metadata:
     Access-Control-Allow-Origin:
       type: string
 
-
 #
 # AWS resource definitions
 #
 Resources:
-
 
   #
   # Web API
@@ -118,7 +114,7 @@ Resources:
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
 
-          /follow/get-followers: 
+          /follow/get-followers:
             post:
               consumes: *commonConsumes
               produces: *commonProduces
@@ -287,10 +283,6 @@ Resources:
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
 
-
-
-
-
   #
   # SQS Queues  (This will become relevant in Milestone 4. For M3, leave this section commented out.)
   #
@@ -299,7 +291,6 @@ Resources:
   #     Type: AWS::SQS::Queue
   #     Properties:
   #       QueueName: MyQueue
-
 
   #
   # Lambda Layer (reused by all Lambda functions)
@@ -313,7 +304,6 @@ Resources:
       CompatibleRuntimes:
         - nodejs20.x
       RetentionPolicy: DELETE
-
 
   #
   # Web API Lambda functions
@@ -337,7 +327,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: getFollowersFunction
-      Handler: lambda/follow/GetFollowersLambda.handler 
+      Handler: lambda/follow/GetFollowersLambda.handler
       Policies: *commonPolicies
       Events:
         PostApi:
@@ -346,7 +336,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /follow/get-followers
             Method: POST
-  
+
   logoutFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -374,7 +364,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /auth/login
             Method: POST
-  
+
   postStatusFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -444,7 +434,7 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /user/get-user
             Method: POST
-  
+
   isFollowerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -514,9 +504,6 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /follow/unfollow-user
             Method: POST
-    
-
-
 
   #
   # SQS Queue Lambda Functions  (This will become relevant in Milestone 4. For M3, leave this section commented out.)
@@ -535,78 +522,105 @@ Resources:
   #             Queue: !GetAtt MyQueue.Arn
   #             Enabled: true
 
-
   #
   # DynamoDB Tables
   #
 
-  visitTable:  ##### TODO: Change "visitTable" to match the table name. This doesn't
-               #####       need to be the actual table name, just a unique identifier.
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: visit  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
-      AttributeDefinitions:
-        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
-        - AttributeName: person_name
-          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
-        - AttributeName: place_name
-          AttributeType: S
-      KeySchema:
-        - AttributeName: person_name  ##### TODO: Set the table partition key name
-          KeyType: HASH
-        - AttributeName: place_name  ##### TODO: Set the table sort key name. Delete these
-          KeyType: RANGE             #####       two lines if the table has no sort key.
-      BillingMode: PROVISIONED
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
-        WriteCapacityUnits: 1  #####       one is fine for now, but you may need to change them later.
-      ##### TODO: If you don't need an index for this table, delete the GlobalSecondaryIndexes property and all its subproperties.
-      GlobalSecondaryIndexes:
-        - IndexName: place_index  ##### TODO: Set the actual index name. This is what your code will use to identify this index.
-          KeySchema:
-            - AttributeName: place_name  ##### TODO: Set the index partition key name
-              KeyType: HASH
-            - AttributeName: person_name  ##### TODO: Set the index sort key name. Delete these
-              KeyType: RANGE              #####       two lines if the index has no sort key.
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1   ##### TODO: Same thing. Indexes have their own read/write
-            WriteCapacityUnits: 1  #####       capacities that you may need to change.
-          Projection:
-            ProjectionType: ALL
+  UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Users
+        AttributeDefinitions:
+          - AttributeName: alias
+            AttributeType: S
+        KeySchema:
+          - AttributeName: alias
+            KeyType: HASH
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
 
-  followTable:  ##### TODO: Change to match the table name
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: follow  ##### TODO: Set the actual table name
-      AttributeDefinitions:
-        ##### TODO: Add attributes that will be partition or sort keys, including their datatypes (for both table and index)
-        - AttributeName: follower_alias
-          AttributeType: S
-        - AttributeName: followee_alias
-          AttributeType: S
-      KeySchema:
-        - AttributeName: follower_alias  ##### TODO: Set table partition key
-          KeyType: HASH
-        - AttributeName: followee_alias  ##### TODO: Set table sort key
-          KeyType: RANGE
-      BillingMode: PROVISIONED
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
-      GlobalSecondaryIndexes:
-        - IndexName: follow_index  ##### TODO: Set the actual index name
-          KeySchema:
-            - AttributeName: followee_alias  ##### TODO: Set index partition key
-              KeyType: HASH
-            - AttributeName: follower_alias  ##### TODO: Set index sort key
-              KeyType: RANGE
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-          Projection:
-            ProjectionType: ALL
+  AuthTokensTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: AuthTokens
+        AttributeDefinitions:
+          - AttributeName: token
+            AttributeType: S
+        KeySchema:
+          - AttributeName: token
+            KeyType: HASH
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
 
-  #
-  # TODO: ADD MORE TABLE DEFINITIONS HERE
-  #
-  
+  FollowsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Follows
+        AttributeDefinitions:
+          - AttributeName: followerAlias
+            AttributeType: S
+          - AttributeName: followeeAlias
+            AttributeType: S
+        KeySchema:
+          - AttributeName: followerAlias
+            KeyType: HASH
+          - AttributeName: followeeAlias
+            KeyType: RANGE
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        GlobalSecondaryIndexes:
+          - IndexName: followeeAlias-followerAlias-index
+            KeySchema:
+              - AttributeName: followeeAlias
+                KeyType: HASH
+              - AttributeName: followerAlias
+                KeyType: RANGE
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+            Projection:
+              ProjectionType: ALL
+
+  StoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Story
+        AttributeDefinitions:
+          - AttributeName: alias
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: alias
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+  FeedTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Feed
+        AttributeDefinitions:
+          - AttributeName: alias
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: alias
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5

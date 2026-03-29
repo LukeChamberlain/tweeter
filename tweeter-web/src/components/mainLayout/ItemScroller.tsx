@@ -7,7 +7,7 @@ import {
   PageItemPresenter,
   PageItemView,
 } from "../../presenter/PageItemPresenter";
-import { Service } from "../../../../tweeter-server/src/model/service/Service";
+import { Service } from "../../presenter/PageItemPresenter";
 
 interface Props<T, U extends Service> {
   featurePath: string;

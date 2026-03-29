@@ -13,8 +13,12 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "tweeter-shared": "file:../tweeter-shared",
+    "bcryptjs": "^3.0.3",
     "date-fns": "^3.3.1",
+    "tweeter-shared": "file:../tweeter-shared",
     "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6"
   }
 }

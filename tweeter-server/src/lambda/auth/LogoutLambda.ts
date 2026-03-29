@@ -3,6 +3,7 @@ import { AuthService } from "../../model/service/AuthService";
 
 export const handler = async (request: TweeterRequest): Promise<TweeterResponse> => {
     const authService = new AuthService();
+    await authService.validateToken(request.token);
     await authService.logout(new AuthToken(request.token, Date.now()));
 
     return {

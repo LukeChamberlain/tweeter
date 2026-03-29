@@ -1,5 +1,4 @@
 import { User, AuthToken } from "tweeter-shared";
-import { Service } from "../../../tweeter-server/src/model/service/Service";
 export interface UserInfo {
   currentUser: User | null;
   displayedUser: User | null;
@@ -9,7 +8,7 @@ export interface UserInfo {
 const CURRENT_USER_KEY: string = "CurrentUserKey";
 const AUTH_TOKEN_KEY: string = "AuthTokenKey";
 
-export class UserInfoStorageService implements Service {
+export class UserInfoStorageService {
   public saveToLocalStorage(currentUser: User, authToken: AuthToken): void {
     localStorage.setItem(CURRENT_USER_KEY, currentUser.toJson());
     localStorage.setItem(AUTH_TOKEN_KEY, authToken.toJson());
